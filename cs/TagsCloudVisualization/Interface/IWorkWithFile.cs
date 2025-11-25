@@ -1,6 +1,6 @@
 ﻿namespace TagsCloudVisualization.Interface;
 
-public interface IFileReader
+public interface IWorkWithFile
 {
     string ReadAllText(string path);
 }

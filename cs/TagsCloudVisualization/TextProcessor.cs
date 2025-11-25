@@ -6,17 +6,17 @@ namespace TagsCloudVisualization;
 public class TextProcessor
 {
     
-    private readonly IFileReader FileReader;
+    private readonly IWorkWithFile workWithFile;
     private readonly string FilePath;
     private const string DefaultFont = "Times New Roman";
     private const int MinSize = 10;
     private const int MaxSize = 48;
 
-    public List<WordData> ProcessWords;
+    public List<WordData> ProcessWords { get; private set; } = new List<WordData>();
 
-    public TextProcessor(IFileReader FileReader, string FilePath)
+    public TextProcessor(IWorkWithFile workWithFile, string FilePath)
     {
-        this.FileReader = FileReader;
+        this.workWithFile = workWithFile;
         this.FilePath =  FilePath;
     }
 
@@ -31,7 +31,7 @@ public class TextProcessor
 
     private List<string> GetWords(string path)
     {
-        var text = FileReader.ReadAllText(path);
+        var text = workWithFile.ReadAllText(path);
         var delimiters = new[] { ' ', '\n', ',', '/'};
         return text.Split(delimiters, StringSplitOptions.RemoveEmptyEntries).ToList();
     }

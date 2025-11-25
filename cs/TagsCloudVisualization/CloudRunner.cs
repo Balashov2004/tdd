@@ -23,7 +23,7 @@ public class CloudRunner
         Center = new Point(imageSize.Width / 2, imageSize.Height / 2);
         Layouter = new CircularCloudLayouter(Center);
         
-        TextProcessor = new TextProcessor(new FileReader(), wordsFilePath);
+        TextProcessor = new TextProcessor(new WorkWithWorkWithFile(), wordsFilePath);
         WordDataList = new List<WordData>();
         PlaceRectangles = new List<Rectangle>();
     }
@@ -41,9 +41,7 @@ public class CloudRunner
         }
         var visualizer = new CreateCloud(PlaceRectangles, ImageSize, processWords); 
         
-        Console.WriteLine($"Отрисовка и сохранение в {OutputPath}...");
         visualizer.SaveImage(OutputPath, ImageFormat.Png);
         
-        Console.WriteLine($"Изображение сохранено в файл: {Path.GetFullPath(OutputPath)}");
     }
 }

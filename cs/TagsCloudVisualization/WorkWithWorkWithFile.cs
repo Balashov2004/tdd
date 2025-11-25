@@ -2,7 +2,7 @@
 
 namespace TagsCloudVisualization;
 
-public class FileReader :  IFileReader
+public class WorkWithWorkWithFile :  IWorkWithFile
 {
     public string ReadAllText(string path)
     {
