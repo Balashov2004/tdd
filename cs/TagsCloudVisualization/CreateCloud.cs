@@ -5,30 +5,32 @@ namespace TagsCloudVisualization;
 
 public class CreateCloud
 {
-    private readonly List<Rectangle> rectangles;
-    private readonly Point center;
-    private readonly Size imageSize;
+    private readonly List<Rectangle> Rectangles;
+    private readonly Size ImageSize;
+    private readonly List<WordData> WordDataList;
     
-    public CreateCloud(List<Rectangle> rectangles, Point center, Size imageSize)
+    public CreateCloud(List<Rectangle> rectangles, Size imageSize, List<WordData> wordDataList)
     {
-        this.rectangles = rectangles;
-        this.center = center;
-        this.imageSize = imageSize;
+        this.Rectangles = rectangles;
+        this.ImageSize = imageSize;
+        this.WordDataList = wordDataList;
     }
 
     public Bitmap DrawCloud()
     {
-        var bitmap = new Bitmap(imageSize.Width, imageSize.Height);
+        var bitmap = new Bitmap(ImageSize.Width, ImageSize.Height);
         using var graphics = Graphics.FromImage(bitmap);
         graphics.Clear(Color.White);
 
-        foreach (var rect in rectangles)
+        for (int i = 0; i < Rectangles.Count; i++)
         {
-            using var brush = new SolidBrush(Color.Black);
-            graphics.FillRectangle(brush, rect);
-            graphics.DrawRectangle(Pens.Green, rect);
+            var rect = Rectangles[i];
+            var data = WordDataList[i];
+            using var brush = new SolidBrush(Color.BurlyWood);
+            
+            graphics.DrawString(data.Word, data.WordFont, brush, rect.Location);
+            graphics.DrawRectangle(Pens.Black, rect);
         }
-        graphics.FillEllipse(Brushes.Red, center.X - 3, center.Y - 3, 6, 6);
         
         return bitmap;
     }

@@ -6,41 +6,44 @@ namespace TagsCloudVisualization;
 
 public class CloudRunner
 {
-    private readonly Size imageSize;
-    private readonly Point center;
-    private readonly int rectanglesCount;
-    private readonly string outputPath;
+    private readonly Size ImageSize;
+    private readonly Point Center;
+    private readonly string OutputPath;
     
-    private readonly CircularCloudLayouter layouter;
-    private readonly List<Rectangle> placedRectangles;
+    private readonly CircularCloudLayouter Layouter;
+    private readonly List<Rectangle> PlaceRectangles;
+    private readonly TextProcessor TextProcessor;
+    private readonly List<WordData> WordDataList;
     
-    public CloudRunner(Size imageSize, int rectanglesCount, string outputPath)
+    public CloudRunner(Size imageSize, string outputPath, string wordsFilePath)
     {
-        this.imageSize = imageSize;
-        this.rectanglesCount = rectanglesCount;
-        this.outputPath = outputPath;
+        this.ImageSize = imageSize;
+        this.OutputPath = outputPath;
         
-        center = new Point(imageSize.Width / 2, imageSize.Height / 2);
-        layouter = new CircularCloudLayouter(this.center);
-        placedRectangles = new List<Rectangle>();
+        Center = new Point(imageSize.Width / 2, imageSize.Height / 2);
+        Layouter = new CircularCloudLayouter(Center);
+        
+        TextProcessor = new TextProcessor(new FileReader(), wordsFilePath);
+        WordDataList = new List<WordData>();
+        PlaceRectangles = new List<Rectangle>();
     }
 
     public void Run()
     {
+        TextProcessor.Process();
+        var processWords = TextProcessor.ProcessWords;
         
-        
-        for (int i = 0; i < rectanglesCount; i++)
+        foreach (var word in processWords)
         {
-            var width = 20;
-            var height = 10;
-            
-            placedRectangles.Add(layouter.GetNextRectangle(new Size(width, height)));
+            var rect = Layouter.GetNextRectangle(word.Size);
+            WordDataList.Add(new WordData(word.Word, word.WordFont, word.Size));
+            PlaceRectangles.Add(rect);
         }
-        var visualizer = new CreateCloud(placedRectangles, center, imageSize); 
+        var visualizer = new CreateCloud(PlaceRectangles, ImageSize, processWords); 
         
-        Console.WriteLine($"Отрисовка и сохранение в {outputPath}...");
-        visualizer.SaveImage(outputPath, ImageFormat.Png);
+        Console.WriteLine($"Отрисовка и сохранение в {OutputPath}...");
+        visualizer.SaveImage(OutputPath, ImageFormat.Png);
         
-        Console.WriteLine($"Изображение сохранено в файл: {Path.GetFullPath(outputPath)}");
+        Console.WriteLine($"Изображение сохранено в файл: {Path.GetFullPath(OutputPath)}");
     }
 }

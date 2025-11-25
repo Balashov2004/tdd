@@ -6,28 +6,28 @@ namespace TagsCloudVisualization;
 
 public class CircularCloudLayouter
 {
-    private readonly Point center;
-    private readonly List<Rectangle> placedRectangles = new();
-    private readonly SpiralPointGenerator spiral;
+    private readonly Point Center;
+    private readonly List<Rectangle> PlacedRectangles = new();
+    private readonly SpiralPointGenerator SpiralGenerator;
     private const int Padding = 2;
     
-    public CircularCloudLayouter(Point center)
+    public CircularCloudLayouter(Point Center)
     {
-        this.center = center;
-        spiral = new SpiralPointGenerator(center, 0.1); 
+        this.Center = Center;
+        SpiralGenerator = new SpiralPointGenerator(Center, 0.1); 
     }
 
     public Rectangle GetNextRectangle(Size rectangleSize)
     {
-        if (placedRectangles.Count == 0)
+        if (PlacedRectangles.Count == 0)
         {
-            var topLeft = CalculateTopLeft(center, rectangleSize);
-            var centerRect = new Rectangle(topLeft.X, topLeft.Y, rectangleSize.Width, rectangleSize.Height);
-            placedRectangles.Add(centerRect);
-            return centerRect;
+            var topLeft = CalculateTopLeft(Center, rectangleSize);
+            var CenterRect = new Rectangle(topLeft.X, topLeft.Y, rectangleSize.Width, rectangleSize.Height);
+            PlacedRectangles.Add(CenterRect);
+            return CenterRect;
         }
 
-        foreach (var point in spiral.GeneratePoints())
+        foreach (var point in SpiralGenerator.GeneratePoints())
         {
             var topLeft = CalculateTopLeft(point, rectangleSize);
             var potentialRect = new Rectangle(topLeft.X, topLeft.Y, rectangleSize.Width, rectangleSize.Height);
@@ -35,7 +35,7 @@ public class CircularCloudLayouter
             if (!IsIntersection(potentialRect))
             {
                 var compactedRect = CompactRectangle(potentialRect);
-                placedRectangles.Add(compactedRect);
+                PlacedRectangles.Add(compactedRect);
                 return compactedRect;
             }
         }
@@ -46,7 +46,7 @@ public class CircularCloudLayouter
     private bool IsIntersection(Rectangle newRectangle)
     {
         var rectWithIndentation = AddIndentation(newRectangle, Padding);
-        return placedRectangles.Any(r => 
+        return PlacedRectangles.Any(r => 
             rectWithIndentation.IntersectsWith(AddIndentation(r, Padding)));
     }
     
@@ -71,10 +71,10 @@ public class CircularCloudLayouter
     private Rectangle CompactRectangle(Rectangle rect)
     {
         var currentRect = rect;
-        var stepX = currentRect.X + currentRect.Width / 2 < center.X ? 1 : -1;
-        var stepY = currentRect.Y + currentRect.Height / 2 < center.Y ? 1 : -1;
+        var stepX = currentRect.X + currentRect.Width / 2 < Center.X ? 1 : -1;
+        var stepY = currentRect.Y + currentRect.Height / 2 < Center.Y ? 1 : -1;
 
-        while ((currentRect.X + currentRect.Width / 2).CompareTo(center.X) != stepX)
+        while ((currentRect.X + currentRect.Width / 2).CompareTo(Center.X) != stepX)
         {
             var nextRect = new Rectangle(currentRect.X + stepX, currentRect.Y, currentRect.Width, currentRect.Height);
             if (IsIntersection(nextRect)) 
@@ -83,7 +83,7 @@ public class CircularCloudLayouter
             currentRect = nextRect;
         }
         
-        while ((currentRect.Y + currentRect.Height / 2).CompareTo(center.Y) != stepY)
+        while ((currentRect.Y + currentRect.Height / 2).CompareTo(Center.Y) != stepY)
         {
             var nextRect = new Rectangle(currentRect.X, currentRect.Y + stepY, currentRect.Width, currentRect.Height);
             if (IsIntersection(nextRect))
