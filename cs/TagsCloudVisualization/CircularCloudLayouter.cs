@@ -9,12 +9,13 @@ public class CircularCloudLayouter
     private readonly Point Center;
     private readonly List<Rectangle> PlacedRectangles = new();
     private readonly SpiralPointGenerator SpiralGenerator;
-    private const int Padding = 2;
+    private readonly AppSettings appSettings;
     
-    public CircularCloudLayouter(Point Center)
+    public CircularCloudLayouter(Point Center, AppSettings appSettings)
     {
         this.Center = Center;
-        SpiralGenerator = new SpiralPointGenerator(Center, 0.1); 
+        this.appSettings = appSettings;
+        SpiralGenerator = new SpiralPointGenerator(Center, appSettings.SpiralDensity); 
     }
 
     public Rectangle GetNextRectangle(Size rectangleSize)
@@ -45,9 +46,9 @@ public class CircularCloudLayouter
 
     private bool IsIntersection(Rectangle newRectangle)
     {
-        var rectWithIndentation = AddIndentation(newRectangle, Padding);
+        var rectWithIndentation = AddIndentation(newRectangle, appSettings.Padding);
         return PlacedRectangles.Any(r => 
-            rectWithIndentation.IntersectsWith(AddIndentation(r, Padding)));
+            rectWithIndentation.IntersectsWith(AddIndentation(r, appSettings.Padding)));
     }
     
     private Rectangle AddIndentation(Rectangle rect, int padding)

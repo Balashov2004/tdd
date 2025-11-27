@@ -6,42 +6,37 @@ namespace TagsCloudVisualization;
 
 public class CloudRunner
 {
-    private readonly Size ImageSize;
-    private readonly Point Center;
-    private readonly string OutputPath;
     
-    private readonly CircularCloudLayouter Layouter;
-    private readonly List<Rectangle> PlaceRectangles;
-    private readonly TextProcessor TextProcessor;
-    private readonly List<WordData> WordDataList;
+    private readonly CircularCloudLayouter layouter;
+    private readonly List<Rectangle> placeRectangles;
+    private readonly TextProcessor textProcessor;
+    private readonly List<WordData> wordDataList;
+    private readonly AppSettings appSettings;
     
-    public CloudRunner(Size imageSize, string outputPath, string wordsFilePath)
+    public CloudRunner(AppSettings appSettings)
     {
-        this.ImageSize = imageSize;
-        this.OutputPath = outputPath;
+        this.appSettings = appSettings;
         
-        Center = new Point(imageSize.Width / 2, imageSize.Height / 2);
-        Layouter = new CircularCloudLayouter(Center);
-        
-        TextProcessor = new TextProcessor(new WorkWithWorkWithFile(), wordsFilePath);
-        WordDataList = new List<WordData>();
-        PlaceRectangles = new List<Rectangle>();
+        layouter = new CircularCloudLayouter(new Point(appSettings.ImageSize.Width / 2, appSettings.ImageSize.Height / 2), appSettings);
+        textProcessor = new TextProcessor(new WorkWithWorkWithFile(), appSettings);
+        wordDataList = new List<WordData>();
+        placeRectangles = new List<Rectangle>();
     }
 
     public void Run()
     {
-        TextProcessor.Process();
-        var processWords = TextProcessor.ProcessWords;
+        textProcessor.Process();
+        var processWords = textProcessor.ProcessWords;
         
         foreach (var word in processWords)
         {
-            var rect = Layouter.GetNextRectangle(word.Size);
-            WordDataList.Add(new WordData(word.Word, word.WordFont, word.Size));
-            PlaceRectangles.Add(rect);
+            var rect = layouter.GetNextRectangle(word.Size);
+            wordDataList.Add(new WordData(word.Word, word.WordFont, word.Size));
+            placeRectangles.Add(rect);
         }
-        var visualizer = new CreateCloud(PlaceRectangles, ImageSize, processWords); 
+        var visualizer = new CreateCloud(placeRectangles, appSettings, processWords); 
         
-        visualizer.SaveImage(OutputPath, ImageFormat.Png);
+        visualizer.SaveImage(appSettings.OutputPath, ImageFormat.Png);
         
     }
 }

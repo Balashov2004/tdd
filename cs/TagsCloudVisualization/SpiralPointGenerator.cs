@@ -6,25 +6,25 @@ namespace TagsCloudVisualization;
 
 public class SpiralPointGenerator
 {
-    private readonly Point Center;
-    private readonly double Density;
-    private double Angle = 0;
+    private readonly Point center;
+    private readonly double density;
+    private double angle;
 
     public SpiralPointGenerator(Point center, double density)
     {
-        this.Center = center;
-        this.Density = density;
+        this.center = center;
+        this.density = density;
     }
     
     public IEnumerable<Point> GeneratePoints()
     {
         while (true)
         {
-            var radius = Density * Angle;
-            var x = (int)Math.Round(Center.X + radius * Math.Cos(Angle));
-            var y = (int)Math.Round(Center.Y + radius * Math.Sin(Angle));
+            var radius = density * angle;
+            var x = (int)Math.Round(center.X + radius * Math.Cos(angle));
+            var y = (int)Math.Round(center.Y + radius * Math.Sin(angle));
             
-            Angle += 0.1; 
+            angle += 0.1; 
 
             yield return new Point(x, y);
         }

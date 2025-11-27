@@ -7,22 +7,19 @@ public class TextProcessor
 {
     
     private readonly IWorkWithFile workWithFile;
-    private readonly string FilePath;
-    private const string DefaultFont = "Times New Roman";
-    private const int MinSize = 10;
-    private const int MaxSize = 48;
+    private readonly AppSettings appSettings;
 
     public List<WordData> ProcessWords { get; private set; } = new List<WordData>();
 
-    public TextProcessor(IWorkWithFile workWithFile, string FilePath)
+    public TextProcessor(IWorkWithFile workWithFile, AppSettings appSettings)
     {
         this.workWithFile = workWithFile;
-        this.FilePath =  FilePath;
+        this.appSettings = appSettings;
     }
 
     public void Process()
     {
-        var words = GetWords(FilePath);
+        var words = GetWords(appSettings.WordsFilePath);
         foreach (var word in words)
         {
             ProcessWords.Add(CreateWordData(word));
@@ -39,8 +36,8 @@ public class TextProcessor
     private WordData CreateWordData(string word)
     {
         var random = new Random();
-        var fontSize = random.Next(MinSize, MaxSize);
-        using var wordFont = new Font(DefaultFont, fontSize);
+        var fontSize = random.Next(appSettings.MinFontSize, appSettings.MaxFontSize);
+        using var wordFont = new Font(appSettings.DefaultFontName, fontSize);
         var size = MeasureWordSize(word, wordFont);
         var storedFont = (Font)wordFont.Clone(); 
         

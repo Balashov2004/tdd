@@ -5,31 +5,32 @@ namespace TagsCloudVisualization;
 
 public class CreateCloud
 {
-    private readonly List<Rectangle> Rectangles;
-    private readonly Size ImageSize;
-    private readonly List<WordData> WordDataList;
+    private readonly List<Rectangle> rectangles;
+    private readonly AppSettings? appSettings;
+    private readonly List<WordData> wordDataList;
     
-    public CreateCloud(List<Rectangle> rectangles, Size imageSize, List<WordData> wordDataList)
+    public CreateCloud(List<Rectangle> rectangles, AppSettings appSettings, List<WordData> wordDataList)
     {
-        this.Rectangles = rectangles;
-        this.ImageSize = imageSize;
-        this.WordDataList = wordDataList;
+        this.rectangles = rectangles;
+        this.appSettings = appSettings;
+        this.wordDataList = wordDataList;
     }
 
     public Bitmap DrawCloud()
     {
-        var bitmap = new Bitmap(ImageSize.Width, ImageSize.Height);
+        var bitmap = new Bitmap(appSettings.ImageSize.Width, appSettings.ImageSize.Height);
         using var graphics = Graphics.FromImage(bitmap);
-        graphics.Clear(Color.White);
+        using var contourPen = new Pen(appSettings.ContourColor, 1);
+        graphics.Clear(appSettings.BackgroundColor);
 
-        for (int i = 0; i < Rectangles.Count; i++)
+        for (int i = 0; i < rectangles.Count; i++)
         {
-            var rect = Rectangles[i];
-            var data = WordDataList[i];
-            using var brush = new SolidBrush(Color.BurlyWood);
-            
+            var rect = rectangles[i];
+            var data = wordDataList[i];
+            using var brush = new SolidBrush(appSettings.WordColor);
+            var contour = appSettings.ContourColor;
             graphics.DrawString(data.Word, data.WordFont, brush, rect.Location);
-            graphics.DrawRectangle(Pens.Black, rect);
+            graphics.DrawRectangle(contourPen, rect);
         }
         
         return bitmap;
