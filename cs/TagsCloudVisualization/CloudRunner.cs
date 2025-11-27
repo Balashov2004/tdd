@@ -18,7 +18,7 @@ public class CloudRunner
         this.appSettings = appSettings;
         
         layouter = new CircularCloudLayouter(new Point(appSettings.ImageSize.Width / 2, appSettings.ImageSize.Height / 2), appSettings);
-        textProcessor = new TextProcessor(new WorkWithWorkWithFile(), appSettings);
+        textProcessor = new TextProcessor(appSettings);
         wordDataList = new List<WordData>();
         placeRectangles = new List<Rectangle>();
     }

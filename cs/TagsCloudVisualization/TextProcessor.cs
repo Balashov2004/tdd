@@ -1,19 +1,14 @@
 ﻿using System.Drawing;
-using TagsCloudVisualization.Interface;
 
 namespace TagsCloudVisualization;
 
 public class TextProcessor
 {
-    
-    private readonly IWorkWithFile workWithFile;
     private readonly AppSettings appSettings;
-
     public List<WordData> ProcessWords { get; private set; } = new List<WordData>();
 
-    public TextProcessor(IWorkWithFile workWithFile, AppSettings appSettings)
+    public TextProcessor(AppSettings appSettings)
     {
-        this.workWithFile = workWithFile;
         this.appSettings = appSettings;
     }
 
@@ -28,7 +23,7 @@ public class TextProcessor
 
     private List<string> GetWords(string path)
     {
-        var text = workWithFile.ReadAllText(path);
+        var text = File.ReadAllText(path);
         var delimiters = new[] { ' ', '\n', ',', '/'};
         return text.Split(delimiters, StringSplitOptions.RemoveEmptyEntries).ToList();
     }
@@ -37,11 +32,10 @@ public class TextProcessor
     {
         var random = new Random();
         var fontSize = random.Next(appSettings.MinFontSize, appSettings.MaxFontSize);
-        using var wordFont = new Font(appSettings.DefaultFontName, fontSize);
+        var wordFont = new Font(appSettings.DefaultFontName, fontSize);
         var size = MeasureWordSize(word, wordFont);
-        var storedFont = (Font)wordFont.Clone(); 
         
-        return new WordData(word, storedFont, size);
+        return new WordData(word, wordFont, size);
     }
 
     private Size MeasureWordSize(string word, Font font)
