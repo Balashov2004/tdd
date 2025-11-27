@@ -11,7 +11,7 @@ public class AppSettings
     private readonly int defaultPadding = 2;
     private readonly double defaultSpiralDensity = 0.1;
     private readonly string defaultImageFormat = "jpg";
-    private readonly string defaultOutputPath = "./results/result5.png";
+    private readonly string defaultOutputPath = "./results/result.png";
     private readonly string defaultWordsFilePath = "./resurses/Words.txt";
     private readonly Color defaultBackgroundColor = Color.White;
     private readonly Color defaultWordColor = Color.BurlyWood;
@@ -23,7 +23,6 @@ public class AppSettings
         string? defaultFontName = null,
         int? minFontSize = null,
         int? maxFontSize = null,
-        int? maxWeight = null,
         int? padding = null,
         double? spiralDensity = null,
         string? outputPath = null,

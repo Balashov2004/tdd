@@ -1,6 +1,4 @@
 ﻿using System.Drawing;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace TagsCloudVisualization;
 
@@ -72,27 +70,43 @@ public class CircularCloudLayouter
     private Rectangle CompactRectangle(Rectangle rect)
     {
         var currentRect = rect;
-        var stepX = currentRect.X + currentRect.Width / 2 < Center.X ? 1 : -1;
-        var stepY = currentRect.Y + currentRect.Height / 2 < Center.Y ? 1 : -1;
-
-        while ((currentRect.X + currentRect.Width / 2).CompareTo(Center.X) != stepX)
+        var centerX = Center.X;
+        var centerY = Center.Y;
+        var stepX = (currentRect.X + currentRect.Width / 2 < centerX) ? 1 : -1;
+        var stepY = (currentRect.Y + currentRect.Height / 2 < centerY) ? 1 : -1;
+        
+        while (true) 
         {
             var nextRect = new Rectangle(currentRect.X + stepX, currentRect.Y, currentRect.Width, currentRect.Height);
-            if (IsIntersection(nextRect)) 
+            if (IsIntersection(nextRect))
+                break; 
+            
+            var nextCenterX = nextRect.X + nextRect.Width / 2;
+            if (stepX > 0 && nextCenterX >= centerX || stepX < 0 && nextCenterX <= centerX)
+            {
+                currentRect = nextRect;
                 break;
-                
+            }
+            
             currentRect = nextRect;
         }
         
-        while ((currentRect.Y + currentRect.Height / 2).CompareTo(Center.Y) != stepY)
+        while (true)
         {
             var nextRect = new Rectangle(currentRect.X, currentRect.Y + stepY, currentRect.Width, currentRect.Height);
             if (IsIntersection(nextRect))
+                break; 
+        
+            var nextCenterY = nextRect.Y + nextRect.Height / 2;
+            if (stepY > 0 && nextCenterY >= centerY || stepY < 0 && nextCenterY <= centerY)
+            {
+                currentRect = nextRect; 
                 break;
-                
+            }
+
             currentRect = nextRect;
         }
-        
+
         return currentRect;
     }
 }

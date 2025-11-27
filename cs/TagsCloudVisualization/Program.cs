@@ -8,7 +8,7 @@ public class Program
     {
         
         var runner = new CloudRunner(
-            new AppSettings()
+            new AppSettings(outputPath: "./results/result5.png")
         );
         runner.Run();
     }
