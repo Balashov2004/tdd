@@ -1,4 +1,5 @@
 ﻿using System.Drawing;
+using System.Text.RegularExpressions;
 
 namespace TagsCloudVisualization;
 
@@ -6,6 +7,9 @@ public class TextProcessor
 {
     private readonly AppSettings appSettings;
     public List<WordData> ProcessWords { get; private set; } = new List<WordData>();
+    public Dictionary<string, int> wordCounts = new Dictionary<string, int>();
+    private int maxCount;
+    private int minCount;
 
     public TextProcessor(AppSettings appSettings)
     {
@@ -14,24 +18,40 @@ public class TextProcessor
 
     public void Process()
     {
-        var words = GetWords(appSettings.WordsFilePath);
-        foreach (var word in words)
+        GetWords(appSettings.WordsFilePath);
+        foreach (var pair  in wordCounts)
         {
-            ProcessWords.Add(CreateWordData(word));
+            ProcessWords.Add(CreateWordData(pair.Key, pair.Value));
         }
     }
 
-    private List<string> GetWords(string path)
+    private void GetWords(string path)
     {
         var text = File.ReadAllText(path);
-        var delimiters = new[] { ' ', '\n', ',', '/'};
-        return text.Split(delimiters, StringSplitOptions.RemoveEmptyEntries).ToList();
+        const string delimitersPattern = @"\s*,\s*|\s*[\/\n]\s*|\s+";
+        var words = Regex.Split(text, delimitersPattern, RegexOptions.IgnoreCase)
+            .Where(w => !string.IsNullOrWhiteSpace(w))
+            .Select(w => w.ToLowerInvariant());
+
+        foreach (var word in words)
+        {
+            if (!wordCounts.ContainsKey(word))
+                wordCounts.Add(word, 0);
+            wordCounts[word]++;
+        }
+        maxCount = wordCounts.Values.Max();
+        minCount = wordCounts.Values.Min();
     }
     
-    private WordData CreateWordData(string word)
+    private WordData CreateWordData(string word, int count)
     {
-        var random = new Random();
-        var fontSize = random.Next(appSettings.MinFontSize, appSettings.MaxFontSize);
+        var spread = maxCount - minCount;
+        var normalize = spread == 0 ? 0.5 : (double)(count - minCount) / spread;
+        
+        var fontSize = (int)Math.Round(appSettings.MinFontSize + 
+                                       (appSettings.MaxFontSize - appSettings.MinFontSize)
+                                       * normalize);
+        
         var wordFont = new Font(appSettings.DefaultFontName, fontSize);
         var size = MeasureWordSize(word, wordFont);
         
