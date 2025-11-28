@@ -4,7 +4,7 @@ namespace TagsCloudVisualization;
 
 public class AppSettings
 {
-    private readonly Size defaultImageSize = new Size(1000, 1000);
+    private readonly Size defaultImageSize = new Size(1500, 1500);
     private readonly string defaultFontNameValue = "Times New Roman";
     private readonly int defaultMinFontSize = 10;
     private readonly int defaultMaxFontSize = 48;

@@ -8,12 +8,15 @@ public class CircularCloudLayouter
     private readonly List<Rectangle> PlacedRectangles = new();
     private readonly SpiralPointGenerator SpiralGenerator;
     private readonly AppSettings appSettings;
+    private readonly Dictionary<Point, List<Rectangle>> grid = new Dictionary<Point, List<Rectangle>>();
+    private readonly int gridSize;
     
     public CircularCloudLayouter(Point Center, AppSettings appSettings)
     {
         this.Center = Center;
         this.appSettings = appSettings;
-        SpiralGenerator = new SpiralPointGenerator(Center, appSettings.SpiralDensity); 
+        SpiralGenerator = new SpiralPointGenerator(Center, appSettings.SpiralDensity);
+        gridSize = appSettings.MaxFontSize;
     }
 
     public Rectangle GetNextRectangle(Size rectangleSize)
@@ -23,6 +26,7 @@ public class CircularCloudLayouter
             var topLeft = CalculateTopLeft(Center, rectangleSize);
             var CenterRect = new Rectangle(topLeft.X, topLeft.Y, rectangleSize.Width, rectangleSize.Height);
             PlacedRectangles.Add(CenterRect);
+            AddRectangleToGrid(CenterRect);
             return CenterRect;
         }
 
@@ -33,6 +37,7 @@ public class CircularCloudLayouter
 
             if (!IsIntersection(potentialRect))
             {
+                AddRectangleToGrid(potentialRect);
                 var compactedRect = CompactRectangle(potentialRect);
                 PlacedRectangles.Add(compactedRect);
                 return compactedRect;
@@ -45,8 +50,55 @@ public class CircularCloudLayouter
     private bool IsIntersection(Rectangle newRectangle)
     {
         var rectWithIndentation = AddIndentation(newRectangle, appSettings.Padding);
-        return PlacedRectangles.Any(r => 
-            rectWithIndentation.IntersectsWith(AddIndentation(r, appSettings.Padding)));
+        
+        var minCellX = rectWithIndentation.Left / gridSize;
+        var maxCellX = rectWithIndentation.Right / gridSize;
+        var minCellY = rectWithIndentation.Top / gridSize;
+        var maxCellY = rectWithIndentation.Bottom / gridSize;
+        
+        for (int x = minCellX; x <= maxCellX; x++)
+        {
+            for (int y = minCellY; y <= maxCellY; y++)
+            {
+                var cellKey = new Point(x, y);
+                if (grid.TryGetValue(cellKey, out List<Rectangle> cellRectangles))
+                {
+                    foreach (var existingRect in cellRectangles)
+                    {
+                        var existingRectWithIndentation = AddIndentation(existingRect, appSettings.Padding);
+                    
+                        if (rectWithIndentation.IntersectsWith(existingRectWithIndentation))
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+    
+    private void AddRectangleToGrid(Rectangle rect)
+    {
+        var minCellX = rect.Left / gridSize;
+        var maxCellX = rect.Right / gridSize;
+        var minCellY = rect.Top / gridSize;
+        var maxCellY = rect.Bottom / gridSize;
+
+        for (int x = minCellX; x <= maxCellX; x++)
+        {
+            for (int y = minCellY; y <= maxCellY; y++)
+            {
+                var cellKey = new Point(x, y);
+            
+                if (!grid.ContainsKey(cellKey))
+                {
+                    grid[cellKey] = new List<Rectangle>();
+                }
+                grid[cellKey].Add(rect);
+            }
+        }
     }
     
     private Rectangle AddIndentation(Rectangle rect, int padding)
