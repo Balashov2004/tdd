@@ -49,7 +49,7 @@ public class CircularCloudLayouterTests
     public void PutNextRectangle_NoIntersection_Test()
     {
         var settingsWithPadding = new AppSettings(padding: 5);
-        var generator = new SpiralPointGenerator(center, settingsWithPadding.SpiralDensity);
+        var generator = new SpiralPointGenerator(center, settingsWithPadding.SpiralDensity, 1);
         var fakeGenerator = A.Fake<IPointGenerator>();
         A.CallTo(() => fakeGenerator.GeneratePoints()).Returns(generator.GeneratePoints());
         A.CallTo(() => fakeGenerator.Center).Returns(center);

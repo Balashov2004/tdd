@@ -19,7 +19,7 @@ public class CloudRunner
         
         layouter = new CircularCloudLayouter( 
             appSettings, new SpiralPointGenerator(new Point(appSettings.ImageSize.Width / 2, 
-                appSettings.ImageSize.Height / 2), appSettings.SpiralDensity));
+                appSettings.ImageSize.Height / 2), appSettings.SpiralDensity, appSettings.Angle));
         textProcessor = new TextProcessor(appSettings);
         wordDataList = new List<WordData>();
         placeRectangles = new List<Rectangle>();

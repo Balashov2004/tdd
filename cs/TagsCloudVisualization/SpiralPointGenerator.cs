@@ -9,14 +9,16 @@ public class SpiralPointGenerator : IPointGenerator
 {
     private readonly Point center;
     private readonly double density;
-    private double angle;
+    private double angle = 0;
+    private readonly double angleStep;
     
     public Point Center => center;
 
-    public SpiralPointGenerator(Point center, double density)
+    public SpiralPointGenerator(Point center, double density, double stepAngle)
     {
         this.center = center;
         this.density = density;
+        this.angleStep = stepAngle;
     }
     
     public IEnumerable<Point> GeneratePoints()
@@ -27,7 +29,7 @@ public class SpiralPointGenerator : IPointGenerator
             var x = (int)Math.Round(center.X + radius * Math.Cos(angle));
             var y = (int)Math.Round(center.Y + radius * Math.Sin(angle));
             
-            angle += 0.1; 
+            angle += angleStep; 
 
             yield return new Point(x, y);
         }

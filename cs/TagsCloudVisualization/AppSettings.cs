@@ -16,6 +16,7 @@ public class AppSettings
     private readonly Color defaultBackgroundColor = Color.White;
     private readonly Color defaultWordColor = Color.BurlyWood;
     private readonly Color defaultContourColor = Color.Black;
+    private readonly double defaultAngle = 1;
     
     
     public AppSettings(
@@ -29,7 +30,8 @@ public class AppSettings
         string? wordsFilePath = null,
         Color? backgroundColor = null,
         Color? wordColors = null,
-        Color? contourColor = null)
+        Color? contourColor = null,
+        double? angle = null)
     {
         ImageSize = imageSize ?? defaultImageSize;
         DefaultFontName = defaultFontName ?? defaultFontNameValue;
@@ -42,6 +44,7 @@ public class AppSettings
         BackgroundColor = backgroundColor ?? defaultBackgroundColor;
         WordColor = wordColors ?? defaultWordColor;
         ContourColor = contourColor ?? defaultContourColor;
+        Angle = angle ?? defaultAngle;
     }
     
     public Size ImageSize { get; }
@@ -55,4 +58,5 @@ public class AppSettings
     public Color BackgroundColor { get; }
     public Color WordColor { get; }
     public Color ContourColor { get; }
+    public double Angle { get; }
 }

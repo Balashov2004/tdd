@@ -17,7 +17,7 @@ public class SpiralPointGeneratorTests
     public void SetUp()
     {
         defaultSettings = new AppSettings(spiralDensity: 0.01); 
-        spiral = new SpiralPointGenerator(center, defaultSettings.SpiralDensity);
+        spiral = new SpiralPointGenerator(center, defaultSettings.SpiralDensity, 1);
     }
     
 
@@ -67,7 +67,7 @@ public class SpiralPointGeneratorTests
         var center = new Point(0, 0);
         var density = 5.0;
         var angleStep = 0.1;
-        var generator = new SpiralPointGenerator(center, density);
+        var generator = new SpiralPointGenerator(center, density, angleStep);
         var numberOfPoints = (int)Math.Ceiling(2 * Math.PI / angleStep);
         var expectedRadius = density * 2 * Math.PI;
         var points = generator.GeneratePoints().Take(numberOfPoints).ToList();
