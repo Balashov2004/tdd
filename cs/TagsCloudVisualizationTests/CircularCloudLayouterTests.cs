@@ -109,4 +109,27 @@ public class CircularCloudLayouterTests
         
         TestContext.WriteLine($"Tag cloud visualization saved to file {fullPath}");
     }
+
+    
+    
+    [Test]
+    public void RectangleNotFit_Test()
+    {
+        var imageSize = new Size(100, 100);
+        var appSettings = new AppSettings(
+            imageSize: imageSize,
+            maxFontSize: 10,
+            padding: 0,
+            spiralDensity: 0.01
+        );
+        var center = new Point(50, 50);
+        var density = 5.0;
+        var angleStep = 0.1;
+        var generator = new SpiralPointGenerator(center, density, angleStep);
+        var layouter = new CircularCloudLayouter(appSettings, generator);
+        Assert.Throws<InvalidOperationException>(() =>
+        {
+            layouter.PutNextRectangle(new Size(200, 200));
+        });
+    }
 }
