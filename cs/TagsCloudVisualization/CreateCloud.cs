@@ -20,19 +20,19 @@ public class CreateCloud
     {
         var bitmap = new Bitmap(appSettings.ImageSize.Width, appSettings.ImageSize.Height);
         using var graphics = Graphics.FromImage(bitmap);
+        using var wordBrush = new SolidBrush(appSettings.WordColor);
         using var contourPen = new Pen(appSettings.ContourColor, 1);
+    
         graphics.Clear(appSettings.BackgroundColor);
 
         for (int i = 0; i < rectangles.Count; i++)
         {
             var rect = rectangles[i];
             var data = wordDataList[i];
-            using var brush = new SolidBrush(appSettings.WordColor);
-            var contour = appSettings.ContourColor;
-            graphics.DrawString(data.Word, data.WordFont, brush, rect.Location);
+            graphics.DrawString(data.Word, data.WordFont, wordBrush, rect.Location);
             graphics.DrawRectangle(contourPen, rect);
         }
-        
+    
         return bitmap;
     }
     

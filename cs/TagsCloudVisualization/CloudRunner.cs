@@ -17,7 +17,9 @@ public class CloudRunner
     {
         this.appSettings = appSettings;
         
-        layouter = new CircularCloudLayouter(new Point(appSettings.ImageSize.Width / 2, appSettings.ImageSize.Height / 2), appSettings);
+        layouter = new CircularCloudLayouter( 
+            appSettings, new SpiralPointGenerator(new Point(appSettings.ImageSize.Width / 2, 
+                appSettings.ImageSize.Height / 2), appSettings.SpiralDensity));
         textProcessor = new TextProcessor(appSettings);
         wordDataList = new List<WordData>();
         placeRectangles = new List<Rectangle>();
@@ -30,7 +32,7 @@ public class CloudRunner
         
         foreach (var word in processWords)
         {
-            var rect = layouter.GetNextRectangle(word.Size);
+            var rect = layouter.PutNextRectangle(word.Size);
             wordDataList.Add(new WordData(word.Word, word.WordFont, word.Size));
             placeRectangles.Add(rect);
         }

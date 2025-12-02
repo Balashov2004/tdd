@@ -9,7 +9,7 @@ public class Program
         
         var runner = new CloudRunner(
             new AppSettings(outputPath: "./results/result7.png",
-                wordsFilePath: "./resurses/words1.txt")
+                wordsFilePath: "./resurses/words2.txt")
         );
         runner.Run();
     }

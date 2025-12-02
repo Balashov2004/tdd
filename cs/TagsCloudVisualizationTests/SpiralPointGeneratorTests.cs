@@ -16,7 +16,7 @@ public class SpiralPointGeneratorTests
     [SetUp]
     public void SetUp()
     {
-        defaultSettings = new AppSettings(spiralDensity: 0.1); 
+        defaultSettings = new AppSettings(spiralDensity: 0.01); 
         spiral = new SpiralPointGenerator(center, defaultSettings.SpiralDensity);
     }
     
@@ -59,5 +59,21 @@ public class SpiralPointGeneratorTests
             Assert.That(currentDistance, Is.GreaterThanOrEqualTo(previousDistance - 0.01));
             previousDistance = currentDistance;
         }
+    }
+
+    [Test]
+    public void AfterOneFullRotation_Test()
+    {
+        var center = new Point(0, 0);
+        var density = 5.0;
+        var angleStep = 0.1;
+        var generator = new SpiralPointGenerator(center, density);
+        var numberOfPoints = (int)Math.Ceiling(2 * Math.PI / angleStep);
+        var expectedRadius = density * 2 * Math.PI;
+        var points = generator.GeneratePoints().Take(numberOfPoints).ToList();
+        var lastPoint = points.Last();
+        var actualRadius = Math.Sqrt(Math.Pow(lastPoint.X - center.X, 2) + Math.Pow(lastPoint.Y - center.Y, 2));
+        
+        Assert.That(actualRadius, Is.InRange(expectedRadius - density, expectedRadius + density));
     }
 }

@@ -1,36 +1,35 @@
 ﻿using System.Drawing;
+using TagsCloudVisualization.Interface;
 
 namespace TagsCloudVisualization;
 
 public class CircularCloudLayouter
 {
-    private readonly Point Center;
-    private readonly List<Rectangle> PlacedRectangles = new();
-    private readonly SpiralPointGenerator SpiralGenerator;
+    private readonly List<Rectangle> placedRectangles = new();
+    private readonly IPointGenerator pointGenerator;
     private readonly AppSettings appSettings;
     private readonly Dictionary<Point, List<Rectangle>> grid = new Dictionary<Point, List<Rectangle>>();
     private readonly int gridSize;
     
-    public CircularCloudLayouter(Point Center, AppSettings appSettings)
+    public CircularCloudLayouter(AppSettings appSettings,  IPointGenerator pointGenerator)
     {
-        this.Center = Center;
         this.appSettings = appSettings;
-        SpiralGenerator = new SpiralPointGenerator(Center, appSettings.SpiralDensity);
+        this.pointGenerator = pointGenerator;
         gridSize = appSettings.MaxFontSize;
     }
 
-    public Rectangle GetNextRectangle(Size rectangleSize)
+    public Rectangle PutNextRectangle(Size rectangleSize)
     {
-        if (PlacedRectangles.Count == 0)
+        if (placedRectangles.Count == 0)
         {
-            var topLeft = CalculateTopLeft(Center, rectangleSize);
-            var CenterRect = new Rectangle(topLeft.X, topLeft.Y, rectangleSize.Width, rectangleSize.Height);
-            PlacedRectangles.Add(CenterRect);
-            AddRectangleToGrid(CenterRect);
-            return CenterRect;
+            var topLeft = CalculateTopLeft(pointGenerator.Center, rectangleSize);
+            var centerRect = new Rectangle(topLeft.X, topLeft.Y, rectangleSize.Width, rectangleSize.Height);
+            placedRectangles.Add(centerRect);
+            AddRectangleToGrid(centerRect);
+            return centerRect;
         }
 
-        foreach (var point in SpiralGenerator.GeneratePoints())
+        foreach (var point in pointGenerator.GeneratePoints())
         {
             var topLeft = CalculateTopLeft(point, rectangleSize);
             var potentialRect = new Rectangle(topLeft.X, topLeft.Y, rectangleSize.Width, rectangleSize.Height);
@@ -39,7 +38,7 @@ public class CircularCloudLayouter
             {
                 AddRectangleToGrid(potentialRect);
                 var compactedRect = CompactRectangle(potentialRect);
-                PlacedRectangles.Add(compactedRect);
+                placedRectangles.Add(compactedRect);
                 return compactedRect;
             }
         }
@@ -122,8 +121,8 @@ public class CircularCloudLayouter
     private Rectangle CompactRectangle(Rectangle rect)
     {
         var currentRect = rect;
-        var centerX = Center.X;
-        var centerY = Center.Y;
+        var centerX = pointGenerator.Center.X;
+        var centerY = pointGenerator.Center.Y;
         var stepX = (currentRect.X + currentRect.Width / 2 < centerX) ? 1 : -1;
         var stepY = (currentRect.Y + currentRect.Height / 2 < centerY) ? 1 : -1;
         
@@ -161,4 +160,5 @@ public class CircularCloudLayouter
 
         return currentRect;
     }
+    
 }

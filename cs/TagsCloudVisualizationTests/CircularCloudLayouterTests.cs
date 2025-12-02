@@ -1,6 +1,8 @@
 using System.Drawing;
 using TagsCloudVisualization;
 using System.Drawing.Imaging;
+using FakeItEasy;
+using TagsCloudVisualization.Interface;
 
 
 namespace TagsCloudVisualizationTests;
@@ -10,7 +12,6 @@ public class CircularCloudLayouterTests
 {
     private AppSettings defaultSettings;
     private List<Rectangle> placesRectangles;
-    private CreateCloud cloudVisualizer;
     private Point center;
     
     [SetUp]
@@ -27,10 +28,12 @@ public class CircularCloudLayouterTests
     public void FirstRectangleInCenter_Test()
     {
         var customCenter = new Point(100, 60);
-        var layouter = new CircularCloudLayouter(customCenter, defaultSettings);
-        
         var rectangleSize = new Size(20, 10);
-        var rectangle = layouter.GetNextRectangle(rectangleSize);
+        var fakeGenerator = A.Fake<IPointGenerator>();
+        A.CallTo(() => fakeGenerator.Center).Returns(customCenter);
+        var layouter = new CircularCloudLayouter(defaultSettings, fakeGenerator);
+        
+        var rectangle = layouter.PutNextRectangle(rectangleSize);
         var expectedX = customCenter.X - rectangleSize.Width / 2;
         var expectedY = customCenter.Y - rectangleSize.Height / 2;
         placesRectangles.Add(rectangle);
@@ -45,17 +48,22 @@ public class CircularCloudLayouterTests
     [Test]
     public void PutNextRectangle_NoIntersection_Test()
     {
-        var settingsWithPadding = new AppSettings(padding: 5); 
-        var layouter = new CircularCloudLayouter(center, settingsWithPadding); 
+        var settingsWithPadding = new AppSettings(padding: 5);
+        var generator = new SpiralPointGenerator(center, settingsWithPadding.SpiralDensity);
+        var fakeGenerator = A.Fake<IPointGenerator>();
+        A.CallTo(() => fakeGenerator.GeneratePoints()).Returns(generator.GeneratePoints());
+        A.CallTo(() => fakeGenerator.Center).Returns(center);
+        
+        var layouter = new CircularCloudLayouter(settingsWithPadding, fakeGenerator); 
         
         var random = new Random();
         var rectangles = new List<Rectangle>();
-        var count = 50; 
+        var count = 50;
         
         for (int i = 0; i < count; i++)
         {
             var size = new Size(random.Next(10, 50), random.Next(10, 50));
-            var rect = layouter.GetNextRectangle(size);
+            var rect = layouter.PutNextRectangle(size);
             rectangles.Add(rect);
             placesRectangles.Add(rect);
         }
