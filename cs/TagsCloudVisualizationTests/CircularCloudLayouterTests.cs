@@ -132,4 +132,49 @@ public class CircularCloudLayouterTests
             layouter.PutNextRectangle(new Size(200, 200));
         });
     }
+
+    [Test]
+public void RectanglesDensity_Test()
+{
+    const double requiredMinDensity = 0.5;
+    
+    var centerPoint = new Point(3000 / 2, 3000 / 2);
+    var center = centerPoint;
+    
+    var settings = new AppSettings(padding: 1, 
+        imageSize: new Size(3000, 3000), 
+        spiralDensity: 0.1);
+    
+    var generator = new SpiralPointGenerator(centerPoint, settings.SpiralDensity, 1.0);
+    var layouter = new CircularCloudLayouter(settings, generator);
+    var random = new Random();
+    var count = 100;
+    var rectanglesArea = 0.0;
+    
+    for (int i = 0; i < count; i++)
+    {
+        var size = new Size(random.Next(20, 60), random.Next(20, 60));
+        var rect = layouter.PutNextRectangle(size);
+        rectanglesArea += rect.Width * rect.Height;
+    }
+    
+    double maxDistance = 0;
+    foreach (var rect in layouter.PlacedRectangles)
+    {
+        maxDistance = Math.Max(maxDistance, DistanceToCenter(rect.Location, center));
+        maxDistance = Math.Max(maxDistance, DistanceToCenter(new Point(rect.Right, rect.Top), center));
+        maxDistance = Math.Max(maxDistance, DistanceToCenter(new Point(rect.Left, rect.Bottom), center));
+        maxDistance = Math.Max(maxDistance, DistanceToCenter(new Point(rect.Right, rect.Bottom), center));
+    }
+    var circleArea = Math.PI * maxDistance * maxDistance;
+    var densityFactor = rectanglesArea / circleArea;
+    Assert.That(densityFactor, Is.GreaterThan(requiredMinDensity));
+}
+    
+    private static double DistanceToCenter(Point p, Point center)
+    {
+        var dx = p.X - center.X;
+        var dy = p.Y - center.Y;
+        return Math.Sqrt(dx * dx + dy * dy);
+    }
 }

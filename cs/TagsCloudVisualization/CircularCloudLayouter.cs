@@ -10,7 +10,8 @@ public class CircularCloudLayouter
     private readonly AppSettings appSettings;
     private readonly Dictionary<Point, List<Rectangle>> grid = new Dictionary<Point, List<Rectangle>>();
     private readonly int gridSize;
-    
+    public List<Rectangle> PlacedRectangles => placedRectangles;
+
     public CircularCloudLayouter(AppSettings appSettings,  IPointGenerator pointGenerator)
     {
         this.appSettings = appSettings;
