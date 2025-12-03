@@ -155,6 +155,7 @@ public void RectanglesDensity_Test()
     {
         var size = new Size(random.Next(20, 60), random.Next(20, 60));
         var rect = layouter.PutNextRectangle(size);
+        placesRectangles.Add(rect);
         rectanglesArea += rect.Width * rect.Height;
     }
     
